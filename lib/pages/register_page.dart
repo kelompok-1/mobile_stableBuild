@@ -3,6 +3,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_signin_button/flutter_signin_button.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:skoolen/pages/condition_policy_page.dart';
+import 'package:skoolen/pages/login_page.dart';
 import 'package:skoolen/pages/onboarding_page.dart';
 
 class registerPage extends StatefulWidget {
@@ -189,7 +191,7 @@ class _registerPageState extends State<registerPage> {
                 width: double.infinity,
                 child: ElevatedButton(
                   child: Text(
-                    "Masuk",
+                    "Daftar",
                     style: GoogleFonts.poppins(
                       fontSize: 20,
                       color: Colors.white,
@@ -292,16 +294,31 @@ class _registerPageState extends State<registerPage> {
                         color: Colors.black,
                       ),
                     ),
-                    GestureDetector(
-                      // onTap: widget.showRegisterPage,
-                      child: Text(
-                        ' Masuk sekarang',
-                        style: GoogleFonts.poppins(
-                          fontSize: 14,
-                          color: Color(0xff00b1d2),
-                          fontWeight: FontWeight.bold,
+                    InkWell(
+                      borderRadius: BorderRadius.circular(12),
+                      // highlightColor: Colors.amber,
+                      highlightColor: Color(0x1000B1D2),
+                      splashColor: Color(0x4000B1D2),
+                      child: Container(
+                        padding: EdgeInsets.symmetric(horizontal: 3),
+                        child: Text(
+                          textAlign: TextAlign.start,
+                          'Masuk',
+                          style: GoogleFonts.poppins(
+                            fontSize: 13,
+                            color: Color(0xff00b1d2),
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => loginPage(),
+                          ),
+                        );
+                      },
                     ),
                   ],
                 ),
@@ -322,17 +339,31 @@ class _registerPageState extends State<registerPage> {
                         color: Colors.black,
                       ),
                     ),
-                    GestureDetector(
-                      // onTap: widget.showRegisterPage,
-                      child: Text(
-                        textAlign: TextAlign.start,
-                        'Syarat Ketentuan & Kebijakan Privasi',
-                        style: GoogleFonts.poppins(
-                          fontSize: 13,
-                          color: Color(0xff00b1d2),
-                          fontWeight: FontWeight.bold,
+                    InkWell(
+                      borderRadius: BorderRadius.circular(12),
+                      // highlightColor: Colors.amber,
+                      highlightColor: Color(0x1000B1D2),
+                      splashColor: Color(0x4000B1D2),
+                      child: Container(
+                        padding: EdgeInsets.symmetric(horizontal: 3),
+                        child: Text(
+                          textAlign: TextAlign.start,
+                          'Syarat Ketentuan & Kebijakan Privasi',
+                          style: GoogleFonts.poppins(
+                            fontSize: 13,
+                            color: Color(0xff00b1d2),
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => conditionPolicy(),
+                          ),
+                        );
+                      },
                     ),
                   ],
                 ),

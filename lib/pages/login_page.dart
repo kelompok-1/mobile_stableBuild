@@ -3,7 +3,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_signin_button/flutter_signin_button.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:skoolen/pages/condition_policy_page.dart';
 import 'package:skoolen/pages/onboarding_page.dart';
+import 'package:skoolen/pages/register_page.dart';
 
 class loginPage extends StatefulWidget {
   const loginPage({super.key});
@@ -402,22 +404,36 @@ class _loginPageState extends State<loginPage> {
                         color: Colors.black,
                       ),
                     ),
-                    GestureDetector(
-                      // onTap: widget.showRegisterPage,
-                      child: Text(
-                        ' Registrasi sekarang',
-                        style: GoogleFonts.poppins(
-                          fontSize: 14,
-                          color: Color(0xff00b1d2),
-                          fontWeight: FontWeight.bold,
+                    InkWell(
+                      borderRadius: BorderRadius.circular(12),
+                      // highlightColor: Colors.amber,
+                      highlightColor: Color(0x1000B1D2),
+                      splashColor: Color(0x4000B1D2),
+                      child: Container(
+                        padding: EdgeInsets.symmetric(horizontal: 3),
+                        child: Text(
+                          textAlign: TextAlign.start,
+                          'Daftar Sekarang',
+                          style: GoogleFonts.poppins(
+                            fontSize: 13,
+                            color: Color(0xff00b1d2),
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => registerPage()),
+                        );
+                      },
                     ),
                   ],
                 ),
               ),
 
-              SizedBox(height: 30),
+              SizedBox(height: 20),
 
               // Syarat Ketentuan & Kebijakan Privasi
               Padding(
@@ -432,17 +448,31 @@ class _loginPageState extends State<loginPage> {
                         color: Colors.black,
                       ),
                     ),
-                    GestureDetector(
-                      // onTap: widget.showRegisterPage,
-                      child: Text(
-                        textAlign: TextAlign.start,
-                        'Syarat Ketentuan & Kebijakan Privasi',
-                        style: GoogleFonts.poppins(
-                          fontSize: 13,
-                          color: Color(0xff00b1d2),
-                          fontWeight: FontWeight.bold,
+                    InkWell(
+                      borderRadius: BorderRadius.circular(12),
+                      // highlightColor: Colors.amber,
+                      highlightColor: Color(0x1000B1D2),
+                      splashColor: Color(0x4000B1D2),
+                      child: Container(
+                        padding: EdgeInsets.symmetric(horizontal: 3),
+                        child: Text(
+                          textAlign: TextAlign.start,
+                          'Syarat Ketentuan & Kebijakan Privasi',
+                          style: GoogleFonts.poppins(
+                            fontSize: 13,
+                            color: Color(0xff00b1d2),
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => conditionPolicy(),
+                          ),
+                        );
+                      },
                     ),
                   ],
                 ),
