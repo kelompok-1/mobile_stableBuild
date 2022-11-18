@@ -2,6 +2,7 @@
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:skoolen/pages/condition_policy_page.dart';
 import 'package:skoolen/pages/splash_screen.dart';
 
 void main() async {
