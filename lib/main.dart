@@ -2,8 +2,7 @@
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:skoolen/pages/condition_policy_page.dart';
-import 'package:skoolen/pages/splash_screen.dart';
+import 'package:skoolen/auth/main_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -19,7 +18,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Skoolen',
       debugShowCheckedModeBanner: false,
-      home: splashScreen(),
+      home: MainPage(),
     );
   }
 }

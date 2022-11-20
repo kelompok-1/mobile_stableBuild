@@ -1,14 +1,15 @@
-// ignore_for_file: camel_case_types, non_constant_identifier_names, prefer_interpolation_to_compose_strings, prefer_const_constructors, prefer_is_empty, sort_child_properties_last, unused_field, prefer_final_fields
+// ignore_for_file: camel_case_types, non_constant_identifier_names, prefer_interpolation_to_compose_strings, prefer_const_constructors, prefer_is_empty, sort_child_properties_last, unused_field, prefer_final_fields, avoid_print
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_signin_button/flutter_signin_button.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:skoolen/pages/condition_policy_page.dart';
-import 'package:skoolen/pages/login_page.dart';
 import 'package:skoolen/pages/onboarding_page.dart';
 
 class registerPage extends StatefulWidget {
-  const registerPage({super.key});
+  final VoidCallback showLoginPage;
+  const registerPage({super.key, required this.showLoginPage});
 
   @override
   State<registerPage> createState() => _registerPageState();
@@ -17,8 +18,46 @@ class registerPage extends StatefulWidget {
 class _registerPageState extends State<registerPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _passwordConfirmController =
+      TextEditingController();
   bool _btnEmailActive = false;
   bool _btnPasswordActive = false;
+  bool _btnPasswordConfirmActive = false;
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    _passwordConfirmController.dispose();
+    super.dispose();
+  }
+
+  Future signUp() async {
+    if (passwordConfirmed()) {
+      try {
+        await FirebaseAuth.instance.createUserWithEmailAndPassword(
+          email: _emailController.text.trim(),
+          password: _passwordController.text.trim(),
+        );
+      } on FirebaseAuthException catch (error) {
+        print(error);
+      }
+    }
+  }
+
+  bool passwordConfirmed() {
+    if (_passwordController.text.trim() ==
+        _passwordConfirmController.text.trim()) {
+      return true;
+    } else {
+      Fluttertoast.showToast(
+        msg: "Kata sandi nggak sama",
+        gravity: ToastGravity.CENTER,
+        backgroundColor: Colors.grey[500],
+      );
+      return false;
+    }
+  }
 
   // hexa colors
   Color HexaColor(String strcolor, {int opacity = 15}) {
@@ -37,32 +76,29 @@ class _registerPageState extends State<registerPage> {
     return Scaffold(
       backgroundColor: Colors.grey[200],
       // appBar
-      appBar: PreferredSize(
-        preferredSize: Size.fromHeight(40.0),
-        child: AppBar(
-          title: Text(
-            'Daftar',
-            style: GoogleFonts.poppins(
-              fontSize: 18,
-              color: Colors.black,
-              fontWeight: FontWeight.bold,
-            ),
+      appBar: AppBar(
+        title: Text(
+          'Daftar',
+          style: GoogleFonts.poppins(
+            fontSize: 18,
+            color: Colors.black,
+            fontWeight: FontWeight.bold,
           ),
-          elevation: 1,
-          backgroundColor: Colors.grey[200],
-          leading: IconButton(
-            splashRadius: 19,
-            icon: Icon(
-              Icons.arrow_back_ios,
-              color: Colors.black,
-            ),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => onboardingPage()),
-              );
-            },
+        ),
+        elevation: 1,
+        backgroundColor: Colors.grey[200],
+        leading: IconButton(
+          splashRadius: 19,
+          icon: Icon(
+            Icons.arrow_back_ios,
+            color: Colors.black,
           ),
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => onboardingPage()),
+            );
+          },
         ),
       ),
 
@@ -71,14 +107,11 @@ class _registerPageState extends State<registerPage> {
           child: ListView(
             physics: NeverScrollableScrollPhysics(),
             children: [
-              // // Logo
-              // Image.asset(
-              //   "assets/pictures/Logo Biru.png",
-              //   scale: 6,
-              // ),
-
-              SizedBox(height: 15),
-
+              // Logo
+              Image.asset(
+                "assets/images/Logo Biru.png",
+                scale: 4,
+              ),
               // login icon
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 25.0),
@@ -90,7 +123,7 @@ class _registerPageState extends State<registerPage> {
                 ),
               ),
 
-              SizedBox(height: 15),
+              SizedBox(height: 10),
 
               // Yay! Kamu kembali
               Padding(
@@ -130,7 +163,7 @@ class _registerPageState extends State<registerPage> {
                 ),
               ),
 
-              SizedBox(height: 30),
+              SizedBox(height: 10),
 
               // Masukkin E-Mail atau Nomor HP
               Padding(
@@ -140,7 +173,7 @@ class _registerPageState extends State<registerPage> {
                   children: [
                     Text(
                       textAlign: TextAlign.start,
-                      'Masukkin E-Mail atau Nomor HP',
+                      'Masukkin E-Mail kamu',
                       style: GoogleFonts.poppins(
                         fontSize: 15,
                         color: Colors.black,
@@ -171,7 +204,7 @@ class _registerPageState extends State<registerPage> {
                       borderSide: BorderSide(color: Color(0xff00B1D2)),
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    hintText: 'Ketik salah satu di sini',
+                    hintText: 'Ketik di sini',
                     fillColor: Colors.grey[200],
                     filled: true,
                   ),
@@ -182,8 +215,144 @@ class _registerPageState extends State<registerPage> {
                   },
                 ),
               ),
+              SizedBox(height: 10),
 
-              SizedBox(height: 30),
+              // Kata Sandi
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      textAlign: TextAlign.start,
+                      'Kata sandi',
+                      style: GoogleFonts.poppins(
+                        fontSize: 15,
+                        color: Colors.black,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              SizedBox(height: 10),
+              // Kata Sandi textfield
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                child: TextField(
+                  cursorColor: const Color(0xffFDDB27),
+                  controller: _passwordController,
+                  obscureText: obscureText,
+                  decoration: InputDecoration(
+                    prefixIcon: const Icon(
+                      Icons.lock,
+                      color: Color(0xff00B1D2),
+                    ),
+                    suffixIcon: GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          obscureText = !obscureText;
+                        });
+                      },
+                      child: obscureText
+                          ? const Icon(
+                              Icons.visibility_off_outlined,
+                              color: Colors.grey,
+                            )
+                          : const Icon(
+                              Icons.visibility_outlined,
+                              color: Colors.grey,
+                            ),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.grey),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Color(0xff00B1D2)),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    hintText: 'Minimal 6 karakter',
+                    fillColor: Colors.grey[200],
+                    filled: true,
+                  ),
+                  onChanged: (value) {
+                    setState(() {
+                      _btnPasswordActive = value.length >= 6 ? true : false;
+                    });
+                  },
+                ),
+              ),
+              SizedBox(height: 10),
+              // Kata Sandi
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      textAlign: TextAlign.start,
+                      'Konfirmasi kata sandi',
+                      style: GoogleFonts.poppins(
+                        fontSize: 15,
+                        color: Colors.black,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              SizedBox(height: 10),
+              // Kata Sandi textfield
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                child: TextField(
+                  cursorColor: const Color(0xffFDDB27),
+                  controller: _passwordConfirmController,
+                  obscureText: obscureText,
+                  decoration: InputDecoration(
+                    prefixIcon: const Icon(
+                      Icons.lock,
+                      color: Color(0xff00B1D2),
+                    ),
+                    suffixIcon: GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          obscureText = !obscureText;
+                        });
+                      },
+                      child: obscureText
+                          ? const Icon(
+                              Icons.visibility_off_outlined,
+                              color: Colors.grey,
+                            )
+                          : const Icon(
+                              Icons.visibility_outlined,
+                              color: Colors.grey,
+                            ),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.grey),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Color(0xff00B1D2)),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    hintText: 'Masukkin sandi yang sama',
+                    fillColor: Colors.grey[200],
+                    filled: true,
+                  ),
+                  onChanged: (value) {
+                    setState(() {
+                      _btnPasswordConfirmActive =
+                          value.length >= 6 ? true : false;
+                    });
+                  },
+                ),
+              ),
+
+              SizedBox(height: 20),
 
               Container(
                 height: 60,
@@ -198,7 +367,11 @@ class _registerPageState extends State<registerPage> {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  onPressed: _btnEmailActive == true ? () {} : null,
+                  onPressed: _btnEmailActive &&
+                          _btnPasswordActive &&
+                          _btnPasswordConfirmActive == true
+                      ? signUp
+                      : null,
                   style: ElevatedButton.styleFrom(
                     elevation: 0,
                     backgroundColor: const Color(0xff00b1d2),
@@ -210,7 +383,7 @@ class _registerPageState extends State<registerPage> {
                 ),
               ),
 
-              SizedBox(height: 30),
+              SizedBox(height: 15),
 
               Column(
                 children: <Widget>[
@@ -218,70 +391,67 @@ class _registerPageState extends State<registerPage> {
                     children: <Widget>[
                       Expanded(
                         child: Container(
-                          margin:
-                              const EdgeInsets.only(left: 25.0, right: 10.0),
+                          margin: const EdgeInsets.symmetric(horizontal: 25.0),
                           child: Divider(
                             color: Colors.black,
                             height: 0,
                           ),
                         ),
                       ),
-                      Text(
-                        "atau daftar dengan",
-                        style: GoogleFonts.poppins(
-                          fontSize: 14,
-                          color: Colors.grey,
-                        ),
-                      ),
-                      Expanded(
-                        child: Container(
-                          margin:
-                              const EdgeInsets.only(left: 10.0, right: 25.0),
-                          child: Divider(
-                            color: Colors.black,
-                            height: 0,
-                          ),
-                        ),
-                      ),
+                      // Text(
+                      //   "atau daftar dengan",
+                      //   style: GoogleFonts.poppins(
+                      //     fontSize: 14,
+                      //     color: Colors.grey,
+                      //   ),
+                      // ),
+                      // Expanded(
+                      //   child: Container(
+                      //     margin:
+                      //         const EdgeInsets.only(left: 10.0, right: 25.0),
+                      //     child: Divider(
+                      //       color: Colors.black,
+                      //       height: 0,
+                      //     ),
+                      //   ),
+                      // ),
                     ],
                   ),
                 ],
               ),
 
-              SizedBox(height: 25),
-
-              // Sign Up Buttons
-              Container(
-                margin: EdgeInsets.symmetric(horizontal: 25.0),
-                width: double.infinity,
-                child: SignInButton(
-                  Buttons.Google,
-                  text: "Sign up with Google",
-                  onPressed: () {},
-                ),
-              ),
-              Container(
-                margin: EdgeInsets.symmetric(horizontal: 25.0),
-                width: double.infinity,
-                child: SignInButton(
-                  Buttons.Facebook,
-                  text: "Sign up with Facebook",
-                  onPressed: () {},
-                ),
-              ),
-              Container(
-                margin: EdgeInsets.symmetric(horizontal: 25.0),
-                width: double.infinity,
-                child: SignInButton(
-                  Buttons.AppleDark,
-                  text: "Sign up with Apple",
-                  onPressed: () {},
-                ),
-              ),
-
               SizedBox(height: 15),
 
-              // Belum punya akun? Daftar Sekarang
+              // Sign Up Buttons
+              // Container(
+              //   margin: EdgeInsets.symmetric(horizontal: 25.0),
+              //   width: double.infinity,
+              //   child: SignInButton(
+              //     Buttons.Google,
+              //     text: "Sign up with Google",
+              //     onPressed: () {},
+              //   ),
+              // ),
+              // Container(
+              //   margin: EdgeInsets.symmetric(horizontal: 25.0),
+              //   width: double.infinity,
+              //   child: SignInButton(
+              //     Buttons.Facebook,
+              //     text: "Sign up with Facebook",
+              //     onPressed: () {},
+              //   ),
+              // ),
+              // Container(
+              //   margin: EdgeInsets.symmetric(horizontal: 25.0),
+              //   width: double.infinity,
+              //   child: SignInButton(
+              //     Buttons.AppleDark,
+              //     text: "Sign up with Apple",
+              //     onPressed: () {},
+              //   ),
+              // ),
+
+              // Udah punya akun? Masuk
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 25.0),
                 child: Row(
@@ -311,20 +481,13 @@ class _registerPageState extends State<registerPage> {
                           ),
                         ),
                       ),
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => loginPage(),
-                          ),
-                        );
-                      },
+                      onTap: widget.showLoginPage,
                     ),
                   ],
                 ),
               ),
 
-              SizedBox(height: 30),
+              SizedBox(height: 10),
 
               // Syarat Ketentuan & Kebijakan Privasi
               Padding(
@@ -411,8 +574,6 @@ class _registerPageState extends State<registerPage> {
               //     )
               //   ],
               // ),
-
-              SizedBox(height: 75),
             ],
           ),
         ),

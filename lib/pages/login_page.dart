@@ -1,14 +1,15 @@
 // ignore_for_file: camel_case_types, non_constant_identifier_names, prefer_interpolation_to_compose_strings, prefer_const_constructors, prefer_is_empty, sort_child_properties_last
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_signin_button/flutter_signin_button.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:skoolen/pages/condition_policy_page.dart';
 import 'package:skoolen/pages/onboarding_page.dart';
-import 'package:skoolen/pages/register_page.dart';
 
 class loginPage extends StatefulWidget {
-  const loginPage({super.key});
+  final VoidCallback showRegisterPage;
+  const loginPage({super.key, required this.showRegisterPage});
 
   @override
   State<loginPage> createState() => _loginPageState();
@@ -19,6 +20,43 @@ class _loginPageState extends State<loginPage> {
   final TextEditingController _passwordController = TextEditingController();
   bool _btnEmailActive = false;
   bool _btnPasswordActive = false;
+
+  Future signIn() async {
+    try {
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: _emailController.text.trim(),
+        password: _passwordController.text.trim(),
+      );
+    } on FirebaseAuthException catch (error) {
+      if (error.message == "The email address is badly formatted.") {
+        Fluttertoast.showToast(
+          msg: "Masukkin E-Mail yang benar",
+          gravity: ToastGravity.CENTER,
+          backgroundColor: Colors.grey[500],
+        );
+      } else if (error.message ==
+          "There is no user record corresponding to this identifier. The user may have been deleted.") {
+        Fluttertoast.showToast(
+          msg: "Pengguna nggak terdaftar",
+          gravity: ToastGravity.CENTER,
+          backgroundColor: Colors.grey[500],
+        );
+      } else {
+        Fluttertoast.showToast(
+          msg: "Kata sandi salah!",
+          gravity: ToastGravity.CENTER,
+          backgroundColor: Colors.grey[500],
+        );
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
 
   // hexa colors
   Color HexaColor(String strcolor, {int opacity = 15}) {
@@ -37,32 +75,29 @@ class _loginPageState extends State<loginPage> {
     return Scaffold(
       backgroundColor: Colors.grey[200],
       // appBar
-      appBar: PreferredSize(
-        preferredSize: Size.fromHeight(40.0),
-        child: AppBar(
-          title: Text(
-            'Masuk',
-            style: GoogleFonts.poppins(
-              fontSize: 18,
-              color: Colors.black,
-              fontWeight: FontWeight.bold,
-            ),
+      appBar: AppBar(
+        title: Text(
+          'Masuk',
+          style: GoogleFonts.poppins(
+            fontSize: 18,
+            color: Colors.black,
+            fontWeight: FontWeight.bold,
           ),
-          elevation: 1,
-          backgroundColor: Colors.grey[200],
-          leading: IconButton(
-            splashRadius: 19,
-            icon: Icon(
-              Icons.arrow_back_ios,
-              color: Colors.black,
-            ),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => onboardingPage()),
-              );
-            },
+        ),
+        elevation: 1,
+        backgroundColor: Colors.grey[200],
+        leading: IconButton(
+          splashRadius: 19,
+          icon: Icon(
+            Icons.arrow_back_ios,
+            color: Colors.black,
           ),
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => onboardingPage()),
+            );
+          },
         ),
       ),
 
@@ -71,13 +106,11 @@ class _loginPageState extends State<loginPage> {
           child: ListView(
             physics: NeverScrollableScrollPhysics(),
             children: [
-              // // Logo
-              // Image.asset(
-              //   "assets/pictures/Logo Biru.png",
-              //   scale: 6,
-              // ),
-
-              SizedBox(height: 15),
+              // Logo
+              Image.asset(
+                "assets/images/Logo Biru.png",
+                scale: 4,
+              ),
 
               // login icon
               Padding(
@@ -132,7 +165,7 @@ class _loginPageState extends State<loginPage> {
 
               SizedBox(height: 15),
 
-              // Masukkin E-Mail atau Nomor HP
+              // Masukkin E-Mail
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 25.0),
                 child: Row(
@@ -140,7 +173,7 @@ class _loginPageState extends State<loginPage> {
                   children: [
                     Text(
                       textAlign: TextAlign.start,
-                      'Masukkin E-Mail atau Nomor HP',
+                      'Masukkin E-Mail kamu',
                       style: GoogleFonts.poppins(
                         fontSize: 15,
                         color: Colors.black,
@@ -171,7 +204,7 @@ class _loginPageState extends State<loginPage> {
                       borderSide: BorderSide(color: Color(0xff00B1D2)),
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    hintText: 'Ketik salah satu di sini',
+                    hintText: 'Ketik di sini',
                     fillColor: Colors.grey[200],
                     filled: true,
                   ),
@@ -240,19 +273,19 @@ class _loginPageState extends State<loginPage> {
                       borderSide: BorderSide(color: Color(0xff00B1D2)),
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    hintText: 'Ketik di sini',
+                    hintText: 'Minimal 6 karakter',
                     fillColor: Colors.grey[200],
                     filled: true,
                   ),
                   onChanged: (value) {
                     setState(() {
-                      _btnPasswordActive = value.length >= 1 ? true : false;
+                      _btnPasswordActive = value.length >= 6 ? true : false;
                     });
                   },
                 ),
               ),
 
-              SizedBox(height: 10),
+              SizedBox(height: 20),
 
               // Lupa kata sandi
               Container(
@@ -271,12 +304,7 @@ class _loginPageState extends State<loginPage> {
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      onPressed: () {
-                        // Navigator.push(
-                        //   context,
-                        //   MaterialPageRoute(builder: (context) => MainPage()),
-                        // );
-                      },
+                      onPressed: signIn,
                       style: TextButton.styleFrom(
                         disabledBackgroundColor: Colors.amber,
                         backgroundColor: Colors.grey[200],
@@ -291,7 +319,7 @@ class _loginPageState extends State<loginPage> {
                 ),
               ),
 
-              SizedBox(height: 15),
+              SizedBox(height: 20),
 
               Container(
                 height: 60,
@@ -307,7 +335,7 @@ class _loginPageState extends State<loginPage> {
                     ),
                   ),
                   onPressed: _btnEmailActive && _btnPasswordActive == true
-                      ? () {}
+                      ? signIn
                       : null,
                   style: ElevatedButton.styleFrom(
                     elevation: 0,
@@ -320,7 +348,7 @@ class _loginPageState extends State<loginPage> {
                 ),
               ),
 
-              SizedBox(height: 10),
+              SizedBox(height: 30),
 
               Column(
                 children: <Widget>[
@@ -328,68 +356,67 @@ class _loginPageState extends State<loginPage> {
                     children: <Widget>[
                       Expanded(
                         child: Container(
-                          margin:
-                              const EdgeInsets.only(left: 25.0, right: 10.0),
+                          margin: const EdgeInsets.symmetric(horizontal: 25.0),
                           child: Divider(
                             color: Colors.black,
                             height: 0,
                           ),
                         ),
                       ),
-                      Text(
-                        "atau masuk dengan",
-                        style: GoogleFonts.poppins(
-                          fontSize: 14,
-                          color: Colors.grey,
-                        ),
-                      ),
-                      Expanded(
-                        child: Container(
-                          margin:
-                              const EdgeInsets.only(left: 10.0, right: 25.0),
-                          child: Divider(
-                            color: Colors.black,
-                            height: 0,
-                          ),
-                        ),
-                      ),
+                      // Text(
+                      //   "atau masuk dengan",
+                      //   style: GoogleFonts.poppins(
+                      //     fontSize: 14,
+                      //     color: Colors.grey,
+                      //   ),
+                      // ),
+                      // Expanded(
+                      //   child: Container(
+                      //     margin:
+                      //         const EdgeInsets.only(left: 10.0, right: 25.0),
+                      //     child: Divider(
+                      //       color: Colors.black,
+                      //       height: 0,
+                      //     ),
+                      //   ),
+                      // ),
                     ],
                   ),
                 ],
               ),
 
-              SizedBox(height: 10),
+              SizedBox(height: 30),
 
-              // Sign in buttons
-              Container(
-                margin: EdgeInsets.symmetric(horizontal: 25.0),
-                width: double.infinity,
-                child: SignInButton(
-                  Buttons.Google,
-                  text: "Sign in with Google",
-                  onPressed: () {},
-                ),
-              ),
-              Container(
-                margin: EdgeInsets.symmetric(horizontal: 25.0),
-                width: double.infinity,
-                child: SignInButton(
-                  Buttons.Facebook,
-                  text: "Sign in with Facebook",
-                  onPressed: () {},
-                ),
-              ),
-              Container(
-                margin: EdgeInsets.symmetric(horizontal: 25.0),
-                width: double.infinity,
-                child: SignInButton(
-                  Buttons.AppleDark,
-                  text: "Sign in with Apple",
-                  onPressed: () {},
-                ),
-              ),
+              // // Sign in buttons
+              // Container(
+              //   margin: EdgeInsets.symmetric(horizontal: 25.0),
+              //   width: double.infinity,
+              //   child: SignInButton(
+              //     Buttons.Google,
+              //     text: "Sign in with Google",
+              //     onPressed: () {},
+              //   ),
+              // ),
+              // Container(
+              //   margin: EdgeInsets.symmetric(horizontal: 25.0),
+              //   width: double.infinity,
+              //   child: SignInButton(
+              //     Buttons.Facebook,
+              //     text: "Sign in with Facebook",
+              //     onPressed: () {},
+              //   ),
+              // ),
+              // Container(
+              //   margin: EdgeInsets.symmetric(horizontal: 25.0),
+              //   width: double.infinity,
+              //   child: SignInButton(
+              //     Buttons.AppleDark,
+              //     text: "Sign in with Apple",
+              //     onPressed: () {},
+              //   ),
+              // ),
 
-              SizedBox(height: 15),
+              // SizedBox(height: 15),
 
               // Belum punya akun? Daftar Sekarang
               Padding(
@@ -421,13 +448,7 @@ class _loginPageState extends State<loginPage> {
                           ),
                         ),
                       ),
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => registerPage()),
-                        );
-                      },
+                      onTap: widget.showRegisterPage,
                     ),
                   ],
                 ),
@@ -477,49 +498,6 @@ class _loginPageState extends State<loginPage> {
                   ],
                 ),
               ),
-
-              // Column(
-              //   children: <Widget>[
-              //     Row(
-              //       mainAxisAlignment: MainAxisAlignment.center,
-              //       children: [
-              //         new Container(
-              //           margin: const EdgeInsets.only(left: 0.0, right: 10.0),
-              //           child: SignInButton(
-              //             Buttons.Google,
-              //             text: "Sign in with Google",
-              //             onPressed: () {},
-              //             shape: RoundedRectangleBorder(
-              //               borderRadius: BorderRadius.circular(20),
-              //             ),
-              //           ),
-              //         ),
-              //         new Container(
-              //           margin: const EdgeInsets.only(left: 0.0, right: 10.0),
-              //           child: SignInButton(
-              //             Buttons.Facebook,
-              //             mini: true,
-              //             onPressed: () {},
-              //             shape: RoundedRectangleBorder(
-              //               borderRadius: BorderRadius.circular(20),
-              //             ),
-              //           ),
-              //         ),
-              //         new Container(
-              //           margin: const EdgeInsets.only(left: 0.0, right: 10.0),
-              //           child: SignInButton(
-              //             Buttons.AppleDark,
-              //             mini: true,
-              //             onPressed: () {},
-              //             shape: RoundedRectangleBorder(
-              //               borderRadius: BorderRadius.circular(20),
-              //             ),
-              //           ),
-              //         ),
-              //       ],
-              //     )
-              //   ],
-              // ),
 
               SizedBox(height: 75),
             ],

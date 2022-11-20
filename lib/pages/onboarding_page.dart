@@ -4,8 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lottie/lottie.dart';
 import 'package:skoolen/onboarding_screens/content_models.dart';
-import 'package:skoolen/pages/login_page.dart';
-import 'package:skoolen/pages/register_page.dart';
+import 'package:skoolen/pages/condition_policy_page.dart';
 
 class onboardingPage extends StatefulWidget {
   const onboardingPage({super.key});
@@ -92,9 +91,9 @@ class _onboardingPageState extends State<onboardingPage> {
             child: TextButton(
               child: Text("Daftar Sekarang"),
               onPressed: () {
-                Navigator.push(
+                Navigator.pushReplacement(
                   context,
-                  MaterialPageRoute(builder: (context) => registerPage()),
+                  MaterialPageRoute(builder: (context) => conditionPolicy()),
                 );
               },
               style: TextButton.styleFrom(
@@ -114,9 +113,9 @@ class _onboardingPageState extends State<onboardingPage> {
             child: OutlinedButton(
               child: Text("Masuk"),
               onPressed: () {
-                Navigator.push(
+                Navigator.pushReplacement(
                   context,
-                  MaterialPageRoute(builder: (context) => loginPage()),
+                  MaterialPageRoute(builder: (context) => conditionPolicy()),
                 );
               },
               style: TextButton.styleFrom(
