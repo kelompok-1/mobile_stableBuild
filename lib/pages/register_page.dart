@@ -40,7 +40,20 @@ class _registerPageState extends State<registerPage> {
           password: _passwordController.text.trim(),
         );
       } on FirebaseAuthException catch (error) {
-        print(error);
+        if (error.message ==
+            "The email address is already in use by another account.") {
+          Fluttertoast.showToast(
+            msg: "Pengguna sudah terdaftar, coba email lain!",
+            gravity: ToastGravity.CENTER,
+            backgroundColor: Colors.grey[500],
+          );
+        } else {
+          Fluttertoast.showToast(
+            msg: error.message.toString(),
+            gravity: ToastGravity.CENTER,
+            backgroundColor: Colors.grey[500],
+          );
+        }
       }
     }
   }

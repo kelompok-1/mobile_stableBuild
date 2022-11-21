@@ -5,6 +5,9 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:lottie/lottie.dart';
 import 'package:skoolen/onboarding_screens/content_models.dart';
 import 'package:skoolen/pages/condition_policy_page.dart';
+import 'package:skoolen/pages/login_page.dart';
+import 'package:skoolen/pages/register_page.dart';
+import 'package:skoolen/pages/splash_screen.dart';
 
 class onboardingPage extends StatefulWidget {
   const onboardingPage({super.key});
@@ -91,10 +94,9 @@ class _onboardingPageState extends State<onboardingPage> {
             child: TextButton(
               child: Text("Daftar Sekarang"),
               onPressed: () {
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(builder: (context) => conditionPolicy()),
-                );
+                Navigator.push(context, MaterialPageRoute(builder: (context) {
+                  return registerPage(showLoginPage: () {});
+                }));
               },
               style: TextButton.styleFrom(
                 backgroundColor: const Color(0xff00b1d2),
@@ -113,10 +115,9 @@ class _onboardingPageState extends State<onboardingPage> {
             child: OutlinedButton(
               child: Text("Masuk"),
               onPressed: () {
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(builder: (context) => conditionPolicy()),
-                );
+                Navigator.push(context, MaterialPageRoute(builder: (context) {
+                  return loginPage(showRegisterPage: () {});
+                }));
               },
               style: TextButton.styleFrom(
                 backgroundColor: Colors.grey[200],

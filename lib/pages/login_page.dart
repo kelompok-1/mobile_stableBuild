@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:skoolen/pages/condition_policy_page.dart';
+import 'package:skoolen/pages/forgot_pw_page.dart';
 import 'package:skoolen/pages/onboarding_page.dart';
 
 class loginPage extends StatefulWidget {
@@ -304,7 +305,12 @@ class _loginPageState extends State<loginPage> {
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      onPressed: signIn,
+                      onPressed: () {
+                        Navigator.push(context,
+                            MaterialPageRoute(builder: (context) {
+                          return ForgotPassword();
+                        }));
+                      },
                       style: TextButton.styleFrom(
                         disabledBackgroundColor: Colors.amber,
                         backgroundColor: Colors.grey[200],
