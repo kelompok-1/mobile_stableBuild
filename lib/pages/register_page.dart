@@ -1,5 +1,6 @@
 // ignore_for_file: camel_case_types, non_constant_identifier_names, prefer_interpolation_to_compose_strings, prefer_const_constructors, prefer_is_empty, sort_child_properties_last, unused_field, prefer_final_fields, avoid_print
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -17,16 +18,19 @@ class registerPage extends StatefulWidget {
 
 class _registerPageState extends State<registerPage> {
   final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _passwordConfirmController =
       TextEditingController();
   bool _btnEmailActive = false;
+  bool _btnUsernameActive = false;
   bool _btnPasswordActive = false;
   bool _btnPasswordConfirmActive = false;
 
   @override
   void dispose() {
     _emailController.dispose();
+    _usernameController.dispose();
     _passwordController.dispose();
     _passwordConfirmController.dispose();
     super.dispose();
@@ -39,11 +43,23 @@ class _registerPageState extends State<registerPage> {
           email: _emailController.text.trim(),
           password: _passwordController.text.trim(),
         );
+        addUserDetails(
+          _usernameController.text.trim(),
+          _emailController.text.trim(),
+          _passwordController.text.trim(),
+        );
       } on FirebaseAuthException catch (error) {
         if (error.message ==
             "The email address is already in use by another account.") {
           Fluttertoast.showToast(
             msg: "Pengguna sudah terdaftar, coba email lain!",
+            gravity: ToastGravity.CENTER,
+            backgroundColor: Colors.grey[500],
+          );
+        } else if (error.message ==
+            "Network error (such as timeout, interrupted connection or unreachable host) has occurred.") {
+          Fluttertoast.showToast(
+            msg: "Tidak ada koneksi internet",
             gravity: ToastGravity.CENTER,
             backgroundColor: Colors.grey[500],
           );
@@ -56,6 +72,15 @@ class _registerPageState extends State<registerPage> {
         }
       }
     }
+  }
+
+  Future addUserDetails(String username, String email, String password) async {
+    await FirebaseFirestore.instance.collection('users').add({
+      'username': username,
+      'email': email,
+      'password': password,
+      'uid': FirebaseAuth.instance.currentUser!.uid,
+    });
   }
 
   bool passwordConfirmed() {
@@ -126,17 +151,17 @@ class _registerPageState extends State<registerPage> {
                 scale: 4,
               ),
               // login icon
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 25.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    Image.asset("assets/images/login_icon.png", scale: 7),
-                  ],
-                ),
-              ),
+              // Padding(
+              //   padding: const EdgeInsets.symmetric(horizontal: 25.0),
+              //   child: Row(
+              //     mainAxisAlignment: MainAxisAlignment.start,
+              //     children: [
+              //       Image.asset("assets/images/login_icon.png", scale: 7),
+              //     ],
+              //   ),
+              // ),
 
-              SizedBox(height: 10),
+              SizedBox(height: 5),
 
               // Yay! Kamu kembali
               Padding(
@@ -178,6 +203,59 @@ class _registerPageState extends State<registerPage> {
 
               SizedBox(height: 10),
 
+              // Masukkin Username
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      textAlign: TextAlign.start,
+                      'Masukkin username pilihan kamu',
+                      style: GoogleFonts.poppins(
+                        fontSize: 15,
+                        color: Colors.black,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              SizedBox(height: 10),
+
+              // Username textfield
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                child: TextField(
+                  cursorColor: const Color(0xffFDDB27),
+                  controller: _usernameController,
+                  decoration: InputDecoration(
+                    prefixIcon: const Icon(
+                      Icons.person_2,
+                      color: Color(0xff00B1D2),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.grey),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Color(0xff00B1D2)),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    hintText: 'Ketik di sini',
+                    fillColor: Colors.grey[200],
+                    filled: true,
+                  ),
+                  onChanged: (value) {
+                    setState(() {
+                      _btnUsernameActive = value.length >= 1 ? true : false;
+                    });
+                  },
+                ),
+              ),
+
+              SizedBox(height: 10),
+
               // Masukkin E-Mail atau Nomor HP
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 25.0),
@@ -206,7 +284,7 @@ class _registerPageState extends State<registerPage> {
                   controller: _emailController,
                   decoration: InputDecoration(
                     prefixIcon: const Icon(
-                      Icons.person_2,
+                      Icons.email,
                       color: Color(0xff00B1D2),
                     ),
                     enabledBorder: OutlineInputBorder(
@@ -325,7 +403,7 @@ class _registerPageState extends State<registerPage> {
                   obscureText: obscureText,
                   decoration: InputDecoration(
                     prefixIcon: const Icon(
-                      Icons.lock,
+                      Icons.lock_person,
                       color: Color(0xff00B1D2),
                     ),
                     suffixIcon: GestureDetector(
@@ -382,7 +460,8 @@ class _registerPageState extends State<registerPage> {
                   ),
                   onPressed: _btnEmailActive &&
                           _btnPasswordActive &&
-                          _btnPasswordConfirmActive == true
+                          _btnPasswordConfirmActive &&
+                          _btnUsernameActive == true
                       ? signUp
                       : null,
                   style: ElevatedButton.styleFrom(

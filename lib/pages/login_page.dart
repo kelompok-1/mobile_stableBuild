@@ -42,6 +42,13 @@ class _loginPageState extends State<loginPage> {
           gravity: ToastGravity.CENTER,
           backgroundColor: Colors.grey[500],
         );
+      } else if (error.message ==
+          "Network error (such as timeout, interrupted connection or unreachable host) has occurred.") {
+        Fluttertoast.showToast(
+          msg: "Tidak ada koneksi internet",
+          gravity: ToastGravity.CENTER,
+          backgroundColor: Colors.grey[500],
+        );
       } else {
         Fluttertoast.showToast(
           msg: "Kata sandi salah!",
